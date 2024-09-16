@@ -28,6 +28,6 @@ public class DebrisCloudEditorTarget : TargetRules
         bPublicSymbolsByDefault = true;  // <- Forced to true on Windows anyways
         WindowsPlatform.bStripUnreferencedSymbols = false;
 
-        DebrisCloudTarget.BuildCSpiceLib(this);
+
     }
 }

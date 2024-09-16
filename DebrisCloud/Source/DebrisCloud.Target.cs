@@ -24,8 +24,6 @@ public class DebrisCloudTarget : TargetRules
     // MaxQ GitHub
     // https://github.com/Gamergenic1/MaxQ
 
-    public const string RelativePathToCSpiceToolkit = "Source\\MaxQ\\CSpice_Library\\cspice\\";
-    public const string RelativePathToCSpiceLib = "Source\\MaxQ\\CSpice_Library\\lib\\Win64\\cspice.lib"; 
     
     public DebrisCloudTarget( TargetInfo Target) : base(Target)
 	{
@@ -34,25 +32,7 @@ public class DebrisCloudTarget : TargetRules
 		ExtraModuleNames.AddRange( new string[] { "DebrisCloud" } );
 
         ExtraModuleNames.AddRange(new string[] { "Spice" });
-
-        BuildCSpiceLib(this);
     }
 
-    static public void BuildCSpiceLib(TargetRules targetRules)
-    {
-        string pathToCSpiceLib = CSpice_Library.CSpiceLibPath(new ReadOnlyTargetRules(targetRules));
-
-        if (!File.Exists(pathToCSpiceLib))
-        {
-            // Note :  If the step fails, since it's a prebuild step, these rules will not be rebuilt.
-            // So, don't cause a failure here, if you're iterating on these rules.
-            // Also, changes to the invocation won't be seen until the following build!
-            System.Console.WriteLine("Rebuilding cspice toolkit lib");
-            targetRules.PreBuildSteps.Add("$(ProjectDir)\\" + RelativePathToCSpiceToolkit + "makeall_ue.bat \"$(ProjectDir)\\" + RelativePathToCSpiceToolkit + "\"");
-        }
-        else
-        {
-            System.Console.WriteLine("cspice toolkit lib is up to date");
-        }
-    }
+   
 }
