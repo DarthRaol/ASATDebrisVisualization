@@ -8,6 +8,7 @@
 #include "Json.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "EngineUtils.h"
+#include "SatteliteDebris.h"
 #include "../EarthActor.h"
 #include "Spice.h"
 #include "SpiceMath.h"
@@ -148,12 +149,13 @@ void ADebrisParent::ProcessSpaceTrackResponse(const TArray<TSharedPtr<FJsonValue
     {
         now = Earth->et;
     }
-
+    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Reached here")));
     SpaceTrackBeginResponse();
     for (int i = 0; i < JsonResponseArray.Num(); ++i)
     {
         ProcessSpaceTrackResponseObject(JsonResponseArray[i]->AsObject());
     }
+    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ended here")));
     SpaceTrackEndResponse(now);
 }
 
@@ -272,12 +274,30 @@ void ADebrisParent::SpaceTrackEndResponse(const FSEphemerisTime& et)
     FSTLEGeophysicalConstants earth;
     USpice::getgeophs(earth, TEXT("EARTH"));
 
+    
+    auto Earth = EarthTheActor.Get();
     for (int i = 0; i < DebrisElements.Num(); ++i)
     {
-        FTransform t;
-        t.SetLocation(LocationFromTLE(et, earth, DebrisElements[i]));
-        t.SetScale3D(FVector(ObjectScale));
-        InstancedMesh->AddInstance(t, false);
+        ASatteliteDebris* SatteliteDebris = GetWorld()->SpawnActor<ASatteliteDebris>(ASatteliteDebris::StaticClass());
+        if(SatteliteDebris){
+            FTransform t;
+            t.SetLocation(LocationFromTLE(et, earth, DebrisElements[i]));
+            t.SetScale3D(FVector(ObjectScale));
+            
+            SatteliteDebris->SetActorTransform(t);
+            SatteliteDebris->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
+            SatteliteDebris->Index = i;
+            SatteliteDebris->Earth = EarthTheActor.Get();
+            SatteliteDebris->JSONValue = DebrisElements[i];
+            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), i));
+            SatteliteDebris->StartTickCalculation = true;
+            //UE_LOG(LogTemp, Warning, TEXT("%d"),i);
+            //InstancedMesh->AddInstance(t, false);
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Object is null")));
+        }
     }
 }
 
@@ -286,13 +306,11 @@ void ADebrisParent::SpaceTrackEndResponse(const FSEphemerisTime& et)
 void ADebrisParent::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
-    FSEphemerisTime now;
-
+    /*
     auto Earth = EarthTheActor.Get();
     if (Earth != nullptr)
     {
-        now = Earth->et;
+        CurrentEphemerisTime = Earth->et;
     }
 
     FSTLEGeophysicalConstants earth;
@@ -306,5 +324,6 @@ void ADebrisParent::Tick(float DeltaTime)
         // In an actual app, we'd update the instances as a batch -- of course...
         InstancedMesh->UpdateInstanceTransform(i, t, false, i == DebrisElements.Num() - 1);
     }
+    */
 }
 

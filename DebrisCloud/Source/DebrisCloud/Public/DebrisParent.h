@@ -36,6 +36,9 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UInstancedStaticMeshComponent> InstancedMesh;
 
+    FSEphemerisTime CurrentEphemerisTime;
+
+    
     // 1982-092A = COSMOS 1408 DEB
     // 1999-025A = FENGYUN 1C DEB
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

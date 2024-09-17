@@ -16,7 +16,13 @@
 	"Plugins": [
 		{
 			"Name": "MaxQ",
-			"Enabled": true
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/146e96d801ed4d8d930b41bfeca53733",
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac",
+				"Android"
+			]
 		},
 		{
 			"Name": "ModelingToolsEditorMode",
