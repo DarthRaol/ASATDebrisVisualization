@@ -295,6 +295,7 @@ void ADebrisActor::SpaceTrackEndResponse(const FSEphemerisTime& et)
 void ADebrisActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+/*
 
     FSEphemerisTime now;
 
@@ -306,7 +307,6 @@ void ADebrisActor::Tick(float DeltaTime)
 
     FSTLEGeophysicalConstants earth;
     USpice::getgeophs(earth, TEXT("EARTH"));
-
     for (int i = 0; i < DebrisElements.Num(); ++i)
     {
         FTransform t;
@@ -314,6 +314,6 @@ void ADebrisActor::Tick(float DeltaTime)
         t.SetScale3D(FVector(ObjectScale));
         // In an actual app, we'd update the instances as a batch -- of course...
         InstancedMesh->UpdateInstanceTransform(i, t, false, i == DebrisElements.Num() -1);
-    }
+    }*/
 }
 

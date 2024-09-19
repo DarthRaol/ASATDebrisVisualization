@@ -19,7 +19,7 @@
 // client to directly connect.  It's against the user agreement.   You would instead
 // need to read and cache data from your own server, and connect your client to it.
 
-class UInstancedStaticMeshComponent;
+class USceneComponent;
 class AEarthActor;
 
 
@@ -34,7 +34,7 @@ public:
     ADebrisParent();
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    TObjectPtr<UInstancedStaticMeshComponent> InstancedMesh;
+    TObjectPtr<USceneComponent> InstancedMesh;
 
     FSEphemerisTime CurrentEphemerisTime;
 
@@ -60,11 +60,6 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     float ObjectScale = 0.1f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TObjectPtr<UMaterialInstance> DebrisMaterial;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FColor DebrisColor;
 
     UPROPERTY()
     TWeakObjectPtr<AEarthActor> EarthTheActor;
@@ -82,7 +77,7 @@ protected:
     void ProcessSpaceTrackResponse(const FString& ResponseContent);
     void ProcessSpaceTrackResponse(const TArray<TSharedPtr<FJsonValue>>& JsonResponseArray);
     void SpaceTrackBeginResponse();
-    void SpaceTrackEndResponse(const FSEphemerisTime& et);
+    void SpaceTrackEndResponse(const FSEphemerisTime& et,const TArray<TSharedPtr<FJsonValue>>& JsonResponseArray);
     void ProcessSpaceTrackResponseObject(const TSharedPtr<FJsonObject>& JsonResponseObject);
     FVector LocationFromTLE(const FSEphemerisTime& et, const FSTLEGeophysicalConstants& GeophysicalConstants, const FSTwoLineElements& Elements);
 

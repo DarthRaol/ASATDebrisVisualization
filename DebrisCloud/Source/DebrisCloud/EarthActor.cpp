@@ -36,7 +36,7 @@ void AEarthActor::BeginPlay()
 	Super::BeginPlay();
 
     // Copy the material...
-    MaterialInstance = StaticMesh->CreateDynamicMaterialInstance(0, EarthMaterial);
+    //MaterialInstance = StaticMesh->CreateDynamicMaterialInstance(0, EarthMaterial);
 	
     // Required for getgeophs, getelm
     ES_ResultCode ResultCode;
@@ -91,7 +91,8 @@ void AEarthActor::Tick(float DeltaTime)
     {
         FVector SunDirection = MaxQ::Math::Swizzle(psun);
         SunDirection.Normalize();
-        MaterialInstance->SetVectorParameterValue("LightDirection", SunDirection);
+        SunPosition = SunDirection;
+        //MaterialInstance->SetVectorParameterValue("LightDirection", SunDirection);
     }
 }
 

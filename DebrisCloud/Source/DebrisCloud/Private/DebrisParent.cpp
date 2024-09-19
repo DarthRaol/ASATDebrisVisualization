@@ -19,7 +19,7 @@ ADebrisParent::ADebrisParent()
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    InstancedMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>("InstancedMesh");
+    InstancedMesh = CreateDefaultSubobject<USceneComponent>("InstancedMesh");
     SetRootComponent(InstancedMesh);
 
     GetRootComponent()->SetAbsolute(false, true, true);
@@ -30,8 +30,6 @@ void ADebrisParent::BeginPlay()
 {
     Super::BeginPlay();
 
-    UMaterialInstanceDynamic* MaterialInstance = InstancedMesh->CreateDynamicMaterialInstance(0, DebrisMaterial);
-    MaterialInstance->SetVectorParameterValue("DebrisColor", DebrisColor);
 
     LoginWithSpaceTrack(ObjectId, SpaceTrackUser, SpaceTrackPassword);
 
@@ -149,14 +147,14 @@ void ADebrisParent::ProcessSpaceTrackResponse(const TArray<TSharedPtr<FJsonValue
     {
         now = Earth->et;
     }
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Reached here")));
+    //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Reached here")));
     SpaceTrackBeginResponse();
     for (int i = 0; i < JsonResponseArray.Num(); ++i)
     {
         ProcessSpaceTrackResponseObject(JsonResponseArray[i]->AsObject());
     }
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Ended here")));
-    SpaceTrackEndResponse(now);
+    SpaceTrackEndResponse(now,JsonResponseArray);
 }
 
 void ADebrisParent::ProcessSpaceTrackResponseObject(const TSharedPtr<FJsonObject>& JsonResponseObject)
@@ -266,10 +264,12 @@ FVector ADebrisParent::LocationFromTLE(const FSEphemerisTime& et, const FSTLEGeo
 void ADebrisParent::SpaceTrackBeginResponse()
 {
     DebrisElements.Empty();
-    InstancedMesh->ClearInstances();
+    //InstancedMesh->ClearInstances();
 }
 
-void ADebrisParent::SpaceTrackEndResponse(const FSEphemerisTime& et)
+
+
+void ADebrisParent::SpaceTrackEndResponse(const FSEphemerisTime& et,const TArray<TSharedPtr<FJsonValue>>& JsonResponseArray)
 {
     FSTLEGeophysicalConstants earth;
     USpice::getgeophs(earth, TEXT("EARTH"));
@@ -282,15 +282,24 @@ void ADebrisParent::SpaceTrackEndResponse(const FSEphemerisTime& et)
         if(SatteliteDebris){
             FTransform t;
             t.SetLocation(LocationFromTLE(et, earth, DebrisElements[i]));
-            t.SetScale3D(FVector(ObjectScale));
+            t.SetScale3D(FVector(5*ObjectScale));
             
             SatteliteDebris->SetActorTransform(t);
             SatteliteDebris->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
             SatteliteDebris->Index = i;
             SatteliteDebris->Earth = EarthTheActor.Get();
-            SatteliteDebris->JSONValue = DebrisElements[i];
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), i));
+            SatteliteDebris->TLE = DebrisElements[i];
+            if(JsonResponseArray[i])
+            {
+                SatteliteDebris->JSONValue = JsonResponseArray[i]->AsObject();
             SatteliteDebris->StartTickCalculation = true;
+            }
+            else
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d index Json Not Recieved"),i));
+    
+            }
+            //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), i));
             //UE_LOG(LogTemp, Warning, TEXT("%d"),i);
             //InstancedMesh->AddInstance(t, false);
         }

@@ -47,6 +47,9 @@ public:
     UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MaterialInstance;
 
+	UPROPERTY(BlueprintReadOnly)
+	FVector SunPosition;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
